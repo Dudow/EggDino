@@ -5,6 +5,7 @@ const client = new Discord.Client()
 const moment = require('moment'); 
 
 const config = require("./config.json")
+
 const mongo = require("./db/mongo")
 const command = require('./commands/commands.js')
 const privateMessage = require('./commands/private')
@@ -12,6 +13,9 @@ const poll = require('./commands/poll')
 const hours = require('./commands/hours')
 const memberCount = require('./commands/member-count')
 const welcome = require('./commands/welcome')
+const help = require('./commands/help')
+const countMessage = require('./commands/message-counter')
+const price = require('./commands/price')
 // const firstMessage = require('./commands/first-message')
 const {prefix} = config
 
@@ -52,12 +56,14 @@ client.on('ready', async () => {
     }
   })
 
-  privateMessage(client, 'milk', 'DONT DO IT 🥛🔫')
-  privateMessage(client, 'gay', 'https://images-ext-1.discordapp.net/external/XhLsqDxF_KT8DL3pGUedDq7qf4V86Z50_DFt0-z4pbc/%3Fv%3D1/https/cdn.discordapp.com/emojis/772118034730975302.png')
+  // privateMessage(client, 'milk', 'DONT DO IT 🥛🔫')
   poll(client)
   hours(client)
   memberCount(client)
   welcome(client)
+  help(client)
+  countMessage(client)
+  price(client)
 
   command(client, 'ctc', (msg) => {
     const name = msg.content.replace(`${prefix}ctc`, '')
@@ -153,21 +159,7 @@ client.on('ready', async () => {
     msg.channel.send(embed)
   })
 
-  command(client, 'help', (msg) => {
-    msg.channel.send(`
-      Talk, Pagliacci, for a while you have this commands:
-        **${prefix}hours <country name>** to see the current hour
-        **${prefix}help** to come back to here
-        **${prefix}addme** to invite me to your server
-    `)
-  })
-
-  command(client, 'ajuda', (msg) => {
-    msg.channel.send(`Fala comédia, por enquanto você tem os comandos:
-        **${prefix}horas <nome do país>** para conferir o horário atual
-        **${prefix}ajuda** pra voltar pra cá
-        **${prefix}addme** pra me colocar no seu server`)
-  })
+  
 
   command(client, 'addme', (msg) => {
     const embed = new Discord.MessageEmbed()
