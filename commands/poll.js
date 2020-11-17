@@ -1,21 +1,24 @@
-module.exports = client => {
+const { prefix } = require('../../config.json')
 
-  const addReactions = message => {
-    message.react('😈')
-    message.react('😇')
-  }
+module.exports = {
+  commands: 'poll',
+  expectedArgs: null,
+  minArgs: 0,
+  maxArgs: 0,
+  callback: async (msg, arguments, text) => {
+    await msg.delete()
 
-  client.on('message', async msg => {
-    if(msg.content.toLowerCase() === '//poll'){
-      await msg.delete()
+    const fetched = await msg.channel.messages.fetch({
+      limit: 1
+    })
 
-      const fetched = await msg.channel.messages.fetch({
-        limit: 1
-      })
-
-      if(fetched && fetched.first()){
-        addReactions(fetched.first())
-      }
+    if(fetched && fetched.first()){
+      addReactions(fetched.first())
     }
-  })
+  },
+}
+
+const addReactions = message => {
+  message.react('😈')
+  message.react('😇')
 }

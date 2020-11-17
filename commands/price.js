@@ -1,29 +1,23 @@
-const fetch = require("node-fetch");
+const fetch = require('node-fetch');
 
-module.exports = client => {
-
-  client.on('message', async msg => {
-
-    msg.content.toLowerCase()
+module.exports = {
+  commands: 'price',
+  expectedArgs: '<quantity> <currency>',
+  minArgs: 2,
+  maxArgs: 2,
+  callback: async (msg, arguments, text) => {
 
     let rupee = ['rupee', 'rupia', 'inr', 'rupees', 'rupias']
     let reals = ['reals', 'real', 'reais', 'brl', 'R$']
-    let dolars = ['dollars', 'dollar', 'dólar', 'dólares', 'usd']
+    let dolars = ['dollars', 'dollar', 'dólar', 'dólares', 'usd', 'doll']
 
-    if(msg.content.includes('//price')){
-      const split = msg.content.split(' ')
+    const split = msg.content.split(/[ ]+/)
 
-      const qtd = split[1]
-      const currency = split[2]
-      let cotation
+    const qtd = split[1]
+    const currency = split[2]
+    let cotation
 
-
-      if(qtd<1 || !currency){
-        msg.channel.send(`You did it wrong... try it "//price 17 rupee"`)
-        return
-      }
-
-      if(rupee.includes(currency)){
+    if(rupee.includes(currency)){
         await fetch(`http://apilayer.net/api/live?access_key=9551e59cd68701cacbeaefad62904e03&currencies=INR,BRL&source=USD&format=1`, {
             method: "GET"
         })
@@ -63,11 +57,5 @@ module.exports = client => {
         msg.channel.send(`${(qtd*USDBRL).toFixed(2)} Reals `)
 
       }
-
-      
-
-      
-    }
-
-  })
+  },
 }

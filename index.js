@@ -3,20 +3,11 @@ const app = express()
 const Discord = require("discord.js")
 const client = new Discord.Client()
 const moment = require('moment'); 
+const path = require('path')
+const fs = require('fs')
 
 const config = require("./config.json")
 
-const mongo = require("./db/mongo")
-const command = require('./commands/commands.js')
-const privateMessage = require('./commands/private')
-const poll = require('./commands/poll')
-const hours = require('./commands/hours')
-const memberCount = require('./commands/member-count')
-const welcome = require('./commands/welcome')
-const help = require('./commands/help')
-const countMessage = require('./commands/message-counter')
-const price = require('./commands/price')
-// const firstMessage = require('./commands/first-message')
 const {prefix} = config
 
 app.get("/", (req, res) => {
@@ -45,169 +36,57 @@ function regexx(word){
   return r;
 }
 
-client.on('ready', async () => {
-  // firstMessage(client, '345702068201193483', 'hi boy', ['🥛'])
+// https://www.youtube.com/watch?v=qpgTC9MDx1o&list=RDqpgTC9MDx1o&start_radio=1&t=0
 
-  await mongo().then(mongoose => {
-    try{
-      console.log('Connected to mongo!')
-    } catch (e) {
-      console.log(e)
-    }
-  })
-
-  // privateMessage(client, 'milk', 'DONT DO IT 🥛🔫')
-  poll(client)
-  hours(client)
-  memberCount(client)
-  welcome(client)
-  help(client)
-  countMessage(client)
-  price(client)
-
-  command(client, 'ctc', (msg) => {
-    const name = msg.content.replace(`${prefix}ctc`, '')
-
-    msg.guild.channels
-    .create(name, {
-      type: 'text',
-    }).then(channel => {
-      const categoryId = '772476246550249534'
-      channel.setParent(categoryId)
+client.on("ready", () => {
+  const activities = [
+    {
+      text: 'Monogatari Series',
+      type: 'WATCHING'
+    },
+    {
+      text: 'indian music',
+      type: 'LISTENING'
+    },
+    {
+      text: 'this bot life',
+      type: 'PLAYING'
+    },
+    // {
+    //   text: 'Monogatari',
+    //   type: 'WATCHING'
+    // }
+  ]
+  let i = 0
+  setInterval(() => {
+    client.user.setActivity(`${activities[i % activities.length].text}`, {
+      type: `${activities[i++ % activities.length].type}`
     })
-  })
-
-  command(client, 'cvc', (msg) => {
-    const name = msg.content.replace(`${prefix}cvc`, '')
-
-    msg.guild.channels
-    .create(name, {
-      type: 'voice',
-    }).then(channel => {
-      const categoryId = '772476246550249534'
-      channel.setParent(categoryId)
-      // channel.setUserLimit(10)
-    })
-  })
-
-  // EMBED MESSAGES
-  // command(client, 'embed', (msg)=> {
-
-  //   const logo = 'https://i.imgur.com/wSTFkRM.png'
-
-  //   const embed = new Discord.MessageEmbed()
-  //     .setTitle('example')
-  //     .setURL('https://www.youtube.com/watch?v=BvY4Q8APwx0')
-  //     .setAuthor(msg.author.username)
-  //     .setImage(logo)
-  //     .setThumbnail(logo)
-  //     .setColor('#00AAFF')
-  //     .addFields(
-  //       {
-  //       name: 'field',
-  //       value: 'eae boy',
-  //       inline: true
-  //       },
-  //       {
-  //       name: 'field 2',
-  //       value: 'eae boy',
-  //       inline: true
-  //       },
-  //       {
-  //       name: 'field 3',
-  //       value: 'eae boy',
-  //       inline: true
-  //       },
-  //     )
-
-  //   msg.channel.send(embed)
-  // })
-
-  command(client, 'serverinfo', msg  =>{
-    const {name, region, memberCount, joinedAt} = msg.guild
-    const icon = msg.guild.iconURL()
-    let {description, createdAt} = msg.guild
-
-    createdAt = moment(createdAt).format("dddd, MMMM Do YYYY")
-
-    if(!description){
-      description = "No description... lazy owner"
-    }
-
-    const embed = new Discord.MessageEmbed()
-      .setTitle(`${name} info:`)
-      .setThumbnail(icon)
-      .addFields(
-        {
-          name: 'Description:',
-          value: description
-        },
-        {
-          name: 'Members:',
-          value: memberCount
-        },
-        {
-          name: 'Created at:',
-          value: createdAt 
-        },
-        {
-          name: 'Region:',
-          value: region
-        }
-      )
-
-    msg.channel.send(embed)
-  })
-
-  
-
-  command(client, 'addme', (msg) => {
-    const embed = new Discord.MessageEmbed()
-      .setTitle('Click here')
-      .setURL('https://discord.com/oauth2/authorize?client_id=772102488005935114&scope=bot&permissions=3145')
-      .setAuthor(`${msg.author.username}, to invite me to your server `)
-
-    msg.reply(embed)
-  })
-
-  command(client, 'servers', (msg) => {
-    client.guilds.cache.forEach((guild) => {
-      msg.channel.send(`${guild.name} has a total of ${guild.memberCount} members`)
-    })
-  })
-  
-  command(client, 'kick', (msg) => {
-    const {member, mentions} = msg
-
-    if (member.hasPermission('ADMINISTRATOR') || member.hasPermission('BAN_MEMBERS')){
-      const target = mentions.users.first()
-
-      if(target){
-        const targetMember = msg.guild.members.cache.get(target.id)
-        targetMember.kick()
-        msg.channel.send(`<@${member.id}>, you did it, not me`)
-      }else{
-        msg.channel.send(`<@${member.id}>, specify someone to ban`)
-      }
-
-    } else{
-      msg.channel.send(`<@${member.id}>, you dont have permission to use this command`)
-    }
-  })
-
-  command(client, 'status', msg => {
-    const content = msg.content.replace('//status', '')
-
-    if(msg.channel.type === 'dm'){
-      client.user.setPresence({
-        activity: {
-          name: content,
-          type: 0
-        }
-      })
-    }
-  })
+  }, 600000)
 })
+
+client.on('ready', async () => {
+  const basefile = 'command-base.js'
+  const commandBase = require(`./commands/${basefile}`)
+
+  const readCommands = dir => {
+    const files = fs.readdirSync(path.join(__dirname, dir))
+
+    for(const file of files){
+      const stat = fs.lstatSync(path.join(__dirname, dir, file))
+      if(stat.isDirectory()){
+        readCommands(path.join(dir, file))
+      } else if(file !== basefile){
+        const option = require(path.join(__dirname, dir, file))
+        commandBase(client, option)
+      }
+    }
+  }
+
+  readCommands('commands')
+})
+
+
 
 client.on('message', msg => {
 
@@ -244,7 +123,5 @@ client.on('message', msg => {
     }
   }
 });
-
-
 
 client.login(process.env.TOKEN)

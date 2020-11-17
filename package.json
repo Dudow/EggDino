@@ -14,8 +14,7 @@
     "express": "^4.17.1",
     "moment": "^2.29.1",
     "momentjs": "^2.0.0",
-    "mongodb": "^3.6.3",
-    "mongoose": "^5.10.13",
+    "mongoose": "^5.10.14",
     "node-fetch": "^2.6.1"
   }
 }
