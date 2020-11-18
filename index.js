@@ -36,8 +36,6 @@ function regexx(word){
   return r;
 }
 
-// https://www.youtube.com/watch?v=qpgTC9MDx1o&list=RDqpgTC9MDx1o&start_radio=1&t=0
-
 client.on("ready", () => {
   const activities = [
     {
@@ -52,24 +50,24 @@ client.on("ready", () => {
       text: 'this bot life',
       type: 'PLAYING'
     },
-    // {
-    //   text: 'Monogatari',
-    //   type: 'WATCHING'
-    // }
   ]
   let i = 0
   setInterval(() => {
     client.user.setActivity(`${activities[i % activities.length].text}`, {
       type: `${activities[i++ % activities.length].type}`
     })
+
+    if(i > activities.length){
+      i=0
+    }
   }, 600000)
 })
 
-client.on('ready', async () => {
+client.on('ready', () => {
   const basefile = 'command-base.js'
   const commandBase = require(`./commands/${basefile}`)
 
-  const readCommands = dir => {
+  const readCommands = (dir) => {
     const files = fs.readdirSync(path.join(__dirname, dir))
 
     for(const file of files){

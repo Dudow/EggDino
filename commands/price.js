@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 
 module.exports = {
-  commands: 'price',
+  commands: ['price', 'preço'],
   expectedArgs: '<quantity> <currency>',
   minArgs: 2,
   maxArgs: 2,
