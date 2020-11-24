@@ -8,6 +8,9 @@ const fs = require('fs')
 
 const config = require("./config.json")
 
+const memberCounter = require('./misc/member-count')
+const antiAd = require('./misc/anti-ad')
+
 const {prefix} = config
 
 app.get("/", (req, res) => {
@@ -17,6 +20,7 @@ app.get("/", (req, res) => {
   res.sendStatus(200)
 })
 app.listen(process.env.PORT)
+
 
 function regexx(word){
   var r=word.content.toLowerCase();
@@ -39,6 +43,10 @@ function regexx(word){
 client.on("ready", () => {
   const activities = [
     {
+      text: 'estudando para o exame de próstata',
+      // type: 'PLAYING'
+    },
+    {
       text: 'Monogatari Series',
       type: 'WATCHING'
     },
@@ -50,6 +58,7 @@ client.on("ready", () => {
       text: 'this bot life',
       type: 'PLAYING'
     },
+    
   ]
   let i = 0
   setInterval(() => {
@@ -84,6 +93,12 @@ client.on('ready', () => {
   readCommands('commands')
 })
 
+client.on('ready', () => {
+
+  antiAd(client)
+  memberCounter(client)
+
+})
 
 
 client.on('message', msg => {

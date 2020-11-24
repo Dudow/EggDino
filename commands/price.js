@@ -28,7 +28,7 @@ module.exports = {
         
         msg.channel.send(`${qtd} Rupees `)
         msg.channel.send(`${(qtd/USDINR).toFixed(2)} Dollars `)
-        msg.channel.send(`${(qtd/USDBRL).toFixed(2)} Reals `)
+        msg.channel.send(`${((qtd/USDINR)*USDBRL).toFixed(2)} Reals `)
 
       } else if(reals.includes(currency)){
         await fetch(`http://apilayer.net/api/live?access_key=9551e59cd68701cacbeaefad62904e03&currencies=INR,BRL&source=USD&format=1`, {
