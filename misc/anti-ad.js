@@ -21,7 +21,6 @@ module.exports = client => {
 
     if(content.includes('discord.gg/')){
       const isOurInvite = await isInvite(guild, code)
-      console.log(isOurInvite)
       if(!isOurInvite){
         const serverId = '345702067643482124'
         const canalId = '345702068201193483'

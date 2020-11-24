@@ -100,7 +100,6 @@ client.on('ready', () => {
 
 })
 
-
 client.on('message', msg => {
 
   let r = regexx(msg); 
